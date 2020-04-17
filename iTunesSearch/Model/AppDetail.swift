@@ -17,8 +17,10 @@ public struct AppDetail {
     var image: String?
     var formattedPrice: String?
     var kind:String?
+    var hasFavorited: Bool
+    var previewUrl:String?
     
-   public init(appName: String?, genre: String?, seller: String?, image: String?, price: String?,kind:String?) {
+    public init(appName: String?, genre: String?, seller: String?, image: String?, price: String?,kind:String?,previewUrl:String?,hasFavorited: Bool = false) {
         
         self.appName = appName
         self.genre = genre
@@ -26,21 +28,17 @@ public struct AppDetail {
         self.image = image
         self.formattedPrice = price
         self.kind=kind
+        self.previewUrl=previewUrl
+        self.hasFavorited=hasFavorited
         
         
     }
 }
 
-//public struct Item {
-//    var name: String
-//    var detail: String
-//
-//    public init(name: String, detail: String) {
-//        self.name = name
-//        self.detail = detail
-//    }
-//}
-
+struct FavoritableContact {
+    
+   
+}
 public struct Section {
     var kind: String
     var items: [AppDetail]

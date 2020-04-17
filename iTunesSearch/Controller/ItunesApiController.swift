@@ -1,5 +1,5 @@
 //
-//  APIController.swift
+//  ItunesApiController.swift
 //  iTunesSearch
 //
 //  Created by Neethu Sukumaran on 4/15/20.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-class ApiController {
+class ItunesApiController {
     
     var iosApps: [AppDetail] = []
     
@@ -41,8 +41,9 @@ class ApiController {
                             let image = appDict.value(forKey: "artworkUrl60")
                             let price = appDict.value(forKey: "formattedPrice")
                             let kind =  appDict.value(forKey: "kind")
+                            let previewUrl=appDict.value(forKey: "previewUrl")
                             
-                            let newApp:AppDetail = AppDetail(appName: appName as? String, genre: genre as? String, seller: seller as? String, image: image as? String, price: price as? String, kind: kind as? String)
+                            let newApp:AppDetail = AppDetail(appName: appName as? String, genre: genre as? String, seller: seller as? String, image: image as? String, price: price as? String, kind: kind as? String, previewUrl: previewUrl as? String)
                             self.iosApps.append(newApp)
                             
                         }

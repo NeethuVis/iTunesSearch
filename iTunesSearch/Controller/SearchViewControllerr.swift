@@ -8,7 +8,7 @@
 
 import UIKit
 
-class FirstViewController: UITableViewController, UISearchBarDelegate {
+class SearchViewController: UITableViewController, UISearchBarDelegate {
   
     
     // Search Bar Controller
@@ -17,23 +17,24 @@ class FirstViewController: UITableViewController, UISearchBarDelegate {
     //AppDetail Object array
     var apps:[AppDetail]?
     var sectionArray:[String] = []
-     var sectionsData : [ Section]=[]
+    var sectionsData : [ Section]=[]
     
-    //ApiController Object
-    var api = ApiController()
+    //ApiItunesApiController
+    var api = ItunesApiController()
     var dataManager=CoreDataManager()
     
-    var isSearching = false
     
+    var isSearching = false
+    //static let appCell = "AppCell"
     struct Storyboard {
         static let appCell = "AppCell"
     }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         searchBar.delegate = self
         searchBar.returnKeyType = UIReturnKeyType.done
         self.tableView.keyboardDismissMode = .onDrag
+        self.dataManager.clearEverything()
     }
     
     //Fetch Data from API to the given string match
@@ -41,7 +42,7 @@ class FirstViewController: UITableViewController, UISearchBarDelegate {
     {
         let jsonUrl = AppStoreEndPoint.search(term: searchText)
         let url = jsonUrl.request.url
-       
+        
         api.getJsonFromUrl(url: url!) { (apps) in
             self.apps = apps
             for item in apps!
@@ -51,41 +52,35 @@ class FirstViewController: UITableViewController, UISearchBarDelegate {
                 section=item.kind
                 
                 if section != nil {
-                   if self.sectionArray.contains(section!) == false {
+                    if self.sectionArray.contains(section!) == false {
                         self.sectionArray.append(section!)
-                   
-                   }
+                        
+                    }
                 } else {
-                   print("Your string does not have a value")
+                    print("Your string does not have a value")
                 }
-        }
-             self.sectionsData=[]
+            }
+            self.sectionsData=[]
             for sectionName in self.sectionArray{
                 var itemArray:[AppDetail]=[]
                 for items in apps!{
-                   
+                    
                     if  sectionName == items.kind{
                         itemArray.append(items)
-                        
-                        
                     }
-                
-                 }
+                }
                 let marks = Section(name: sectionName, items:itemArray)
                 // sectionObj.init()
                 
-                 self.sectionsData.append(marks)
-                 
+                self.sectionsData.append(marks)
             }
-            
-            
-           
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
         }
         
     }
+    
 
 
     // MARK: - Table view data source
@@ -105,33 +100,23 @@ class FirstViewController: UITableViewController, UISearchBarDelegate {
         label.font = UIFont(name: "Helvetica", size: 20)
         label.textColor = UIColor.white
         label.backgroundColor = .gray
-        
-        //label.
         label.text = sectionsData[section].kind
         return label
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: Storyboard.appCell, for: indexPath) as! AppTableViewCell
-       let starButton=UIButton(type: .custom)
-       starButton.setImage(#imageLiteral(resourceName: "star"), for:.normal)
-       starButton.frame=CGRect(x:0,y:0,width: 20,height: 20)
-        starButton.addTarget(self, action:#selector(self.favoriteSelected), for: .touchUpInside)
-        cell.accessoryView=starButton
+        let cell = tableView.dequeueReusableCell(withIdentifier: Storyboard.appCell, for: indexPath) as! ItunesAppTableViewCell
+        
         let item: AppDetail = sectionsData[indexPath.section].items[indexPath.row]
+        print(item.hasFavorited)
+      
         cell.app=item
             
         return cell
     }
-    @objc func favoriteSelected() {
-      //  print("Button Clicked")
-    }
-    // Modal Popup when clicking on a table row/cell
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-         let indexPath = tableView.indexPathForSelectedRow
-        let item: AppDetail = sectionsData[indexPath!.section].items[indexPath!.row]
-        dataManager.createData(item: item)
-    }
+   
+    
+    
     
     // When user starts searching for specific apps
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -152,6 +137,24 @@ class FirstViewController: UITableViewController, UISearchBarDelegate {
             fetchApps(searchText: searchText)
         }
     }
+    
+    func someMethodIWantToCall(cell: UITableViewCell) {
+    //        print("Inside of ViewController now...")
+            
+            // we're going to figure out which name we're clicking on
+            
+            guard let indexPathTapped = tableView.indexPath(for: cell) else { return }
+            
+        let item: AppDetail = sectionsData[indexPathTapped.section].items[indexPathTapped.row]
+            print(item)
+            
+             let hasFavorited = item.hasFavorited
+            sectionsData[indexPathTapped.section].items[indexPathTapped.row].hasFavorited = !hasFavorited
+            
+    //        tableView.reloadRows(at: [indexPathTapped], with: .fade)
+            
+            cell.accessoryView?.tintColor = hasFavorited ? UIColor.lightGray : .red
+        }
 
 }
 

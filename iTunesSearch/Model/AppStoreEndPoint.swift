@@ -40,7 +40,6 @@ enum AppStoreEndPoint
     }
     
     private struct DefaultValues {
-       // static let entity = "software"
         static let limit = "10"
     }
     
